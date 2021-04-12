@@ -1,6 +1,6 @@
 # Redux Login
 
-Simple login application built with React-Native, Redux, Styled-Components.
+Simple login application built with React-Native, Redux and Styled-Components.
 
 Screen
 
