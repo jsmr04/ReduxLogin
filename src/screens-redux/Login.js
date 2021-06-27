@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components/native";
 import IconTextInput from "../components/IconTextInput";
 import Button from "../components/Button";
 import Section from "../components/Section";
 import * as theme from "../theme";
-import users from "../data/Users.json" 
+import { connect } from "react-redux"; //1) Import connect
+import {
+  status,
+  attemptLogin,
+  setUsername,
+  setPassword,
+  resetStatus,
+} from "../redux/reducers/login"; //2) Import reducers
 import Toast from "react-native-toast-message";
 
 const Container = styled.View`
@@ -40,25 +47,31 @@ const Text = styled.Text`
   font-size: ${theme.FONT.SIZE};
 `;
 
-const App = ({ navigation }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
+//3) Import state and reducers
+const App = ({ navigation, state, setUsername, setPassword, attemptLogin, resetStatus }) => {
+  console.log("-- REDUX STATE --")
+  console.log(state)
+  
   const login = () => {
-    if (password.trim() === '' ||  username.trim() === '' ){
+    if (state.password.trim() === '' ||  state.username.trim() === '' ){
         showError('Username and Password are required!')
         return; 
     }
     attemptLogin();
   };
 
-  const attemptLogin = ()=>{
-    const matchUser = users
-              .filter(x => x.username == username && x.password == password)
-    if (matchUser.length > 0){
-      navigation.replace("Home", {user: matchUser[0]})
+  useEffect(()=>{
+    if (state.status === status.SUCCESS){
+        resetStatus()
+        navigation.replace("Home")
     }
-  }
+
+    if (state.status === status.FAILED){
+        resetStatus()
+        showError('Username and Password do not match!')
+    }
+
+  }, [state.status])
 
   const showError = (message) =>{
     Toast.show({
@@ -82,14 +95,14 @@ const App = ({ navigation }) => {
         <IconTextInput
           placeholder={"Username"}
           iconName={"person"}
-          value={username}
+          value={state.username}
           onChangeText={(text) => setUsername(text)}
         />
         <IconTextInput
           placeholder={"Password"}
           iconName={"key"}
           secureTextEntry={true}
-          value={password}
+          value={state.password}
           onChangeText={(text) => setPassword(text)}
         />
         <Row>
@@ -114,19 +127,22 @@ const App = ({ navigation }) => {
   );
 };
 
-// const mapStateToProps = (state) => {
-//   return { state: state.loginReducer };
-// };
+//Map state
+const mapStateToProps = (state) => {
+  return { state: state.loginReducer };
+};
 
-// const mapDispatchToProps = (dispatch) => ({
-//   attemptLogin: () => dispatch(attemptLogin()),
-//   setUsername: (username) => dispatch(setUsername(username)),
-//   setPassword: (password) => dispatch(setPassword(password)),
-//   resetStatus: () => dispatch(resetStatus())
-// });
+//Dispatchers 
+const mapDispatchToProps = (dispatch) => ({
+  attemptLogin: () => dispatch(attemptLogin()),
+  setUsername: (username) => dispatch(setUsername(username)),
+  setPassword: (password) => dispatch(setPassword(password)),
+  resetStatus: () => dispatch(resetStatus())
+});
 
-//export default connect(mapStateToProps, mapDispatchToProps)(App);
-export default App;
+//Connect screen and Redux
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+//export default App;
 
 
 

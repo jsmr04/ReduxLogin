@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
+import { connect } from "react-redux"; //1) Import connect
 
-export default function App({ navigation, route }) {
-  const { user } = route.params
+function App({ navigation, route, user }) {
+  //console.log(state)
   return (
     <View style={styles.container}>
         <Text style={{ fontSize: 20 }}>Email: {user.username}</Text>
@@ -20,3 +21,11 @@ const styles = StyleSheet.create({
         alignItems:'center'
     }
 })
+
+//Map state
+const mapStateToProps = (state) => {
+  return { user: state.loginReducer.user };
+};
+
+//Connect screen and Redux
+export default connect(mapStateToProps)(App);

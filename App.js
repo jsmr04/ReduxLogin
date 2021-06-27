@@ -12,3 +12,16 @@ export default function App() {
     </Provider>
   );
 }
+
+// 1) Install dependencies 
+//    npm install redux react-redux
+
+// 2) Create store
+
+// 3) Add Provider and store in App.js
+
+// 4) Create action creators, initial data and reducer
+
+// 5) combine and export reducer
+
+// 6 connect screens
